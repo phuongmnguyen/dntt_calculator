@@ -65,11 +65,12 @@
             <div id="calculator-cases" style="display:none;">
               <hr/>
               <div class="tab">
-                <button class="tablinks" onclick="openTab(event, 'full-rr', 'case'); calculateFullRR();">Full Refund or M Case</button>
+                <button class="tablinks" onclick="openTab(event, 'full-rr', 'case'); calculateFullRR();">Full Refund Case</button>
+                <button class="tablinks" onclick="openTab(event, 'full-mismatch', 'case'); calculateFullMismatch();">Full Mismatch Case</button>
+                <button class="tablinks" onclick="openTab(event, 'lost', 'case'); calculateFullLost();">Full Lost Case</button>
                 <button class="tablinks" onclick="openTab(event, 'partial', 'case');">Normal Partial Refund Case</button>
                 <button class="tablinks" onclick="openTab(event, 'partial-rr', 'case');">Correction for Partial Quantity</button>
-                <button class="tablinks" onclick="openTab(event, 'lost', 'case'); calculateFullLost();">Full Lost Case</button>
-                <button class="tablinks" onclick="openTab(event, 'status-mismatch', 'case'); calculateFullMismatch();">Full Mismatch Case</button>
+                <button class="tablinks" onclick="openTab(event, 'partial-mismatch', 'case');">Partial Mismatch Case</button>
               </div>
               <div id="full-rr" class="tabcontent case">
                 <p>
@@ -83,6 +84,25 @@
                   <label for="full-rr-buyer">Refund to buyer = &nbsp;</label><strong id="full-rr-buyer" class="result"></strong><br/><label for="full-rr-buyer" style="font-size: small;"> (= buyer_paid_amount)</label>
                   <br/>
                   <label for="full-rr-seller">Deduct from seller = &nbsp;</label><strong id="full-rr-seller" class="result"></strong><br/><label for="full-rr-seller" style="font-size: small;"> (= cogs_full_order - seller_txn_fee(order) - comm_fee(order) - seller_voucher_rebate(order) - seller_shipping_rebate -  service_fee(order))</label>
+                </div>
+              </div>
+              <div id="full-mismatch" class="tabcontent case">
+                <p>
+                  <em style="font-size:small;">In this case calculator will return the following:</em>
+                  <table style="font-size:12px;">
+                    <tr style="font-weight: bold;"><td>Case</td><td>Payment Method</td><td style="color: crimson;">Action for Buyer</td><td style="color: crimson;">Action for Seller</td></tr>
+                    <tr><td>Order INVALID on System. But actually DELIVERED</td><td>COD</td><td>None</td><td>Refund to Seller</td></tr>
+                    <tr><td rowspan="2">Order CANCELLED on System. But actually DELIVERED</td><td>COD</td><td>None</td><td>Refund to Seller</td></tr>
+                    <tr><td>Non-COD</td><td>Deduct from Buyer</td><td>Refund to Seller</td></tr>
+                    <tr><td rowspan="2">Order ESCROW_COMPLETED on System. But actually NOT DELIVERED</td><td>COD</td><td>None</td><td>Deduct from Seller</td></tr>
+                    <tr><td>Non-COD</td><td>Refund to Buyer</td><td>Deduct from Seller</td></tr>
+                  </table>
+                  <em style="font-size:small;">If action is None, please ignore calculated result for that party</em>
+                </p>
+                <div class="calculator-result">
+                  <label for="full-mismatch-buyer">Buyer = &nbsp;</label><strong id="full-mismatch-buyer" class="result"></strong><br/><label for="full-mismatch-buyer" style="font-size: small;"> (= buyer_paid_amount)</label>
+                  <br/>
+                  <label for="full-mismatch-seller">Seller = &nbsp;</label><strong id="full-mismatch-seller" class="result"></strong><br/><label for="full-mismatch-seller" style="font-size: small;"> (= cogs_full_order - seller_txn_fee(order) - comm_fee(order) - seller_voucher_rebate(order) - seller_shipping_rebate -  service_fee(order))</label>
                 </div>
               </div>
               <div id="partial" class="tabcontent case">
@@ -103,14 +123,14 @@
               </div>
               <div id="partial-rr" class="tabcontent case">
                 <p>
+                <p style="color: red;"> For this case, please input <strong>quantity</strong> & <strong>service_fee</strong> in <strong>Item Level Data</strong></p>
                 <p>This mode should be used when: </p>
-                <ul style="font-size:small;">
+                <ol style="font-size:small;">
                     <li>Buyer requested to return refund partial quantity of an item</li>
                     <li>Shopee decided to accept return refund for the full quantity of the iteam</li>
-                    <li>-> System already refunded buyer, and deducted seller's escrow for full quantity of item</li>
-                    <li>-> Now we have to deduct from buyer's wallet and refund to seller for th e quantity that buyer kept.</li>
-                  </ul>
-                <p style="color: red;"> For this case, please input <strong>quantity</strong> & <strong>service_fee</strong> in <strong>Item Level Data</strong></p>
+                    <li>System already refunded buyer, and deducted seller's escrow for full quantity of item</li>
+                    <li>Now we have to deduct from buyer's wallet and credit to seller for the quantity that buyer kept.</li>
+                </ol>
                   <em style="font-size:small;">In this case calculator will return the following:</em>
                   <ul style="font-size:small;">
                     <li>Amount to deduct from <strong>Buyer</strong></li>
@@ -138,7 +158,7 @@
                   <label for="full-lost-seller">Refund to seller = &nbsp;</label><strong id="full-lost-seller" class="result"></strong><br/><label for="full-lost-seller" style="font-size: small;"> (= cogs_full_order - seller_voucher_rebate(order))</label>
                 </div>
               </div>
-              <div id="status-mismatch" class="tabcontent case">
+              <div id="partial-mismatch" class="tabcontent case">
                  <p>
                   <em style="font-size:small;">In this case calculator will return the following:</em>
                   <ul style="font-size:small;">
@@ -147,9 +167,9 @@
                   </ul>
                 </p>
                 <div class="calculator-result">
-                  <label for="full-mismatch-buyer">Refund to buyer = &nbsp;</label><strong id="full-mismatch-buyer" class="result"></strong><br/><label for="full-mismatch-buyer" style="font-size: small;"> (= buyer_paid_amount)</label>
+                  <label for="partial-mismatch-buyer">Refund to buyer = &nbsp;</label><strong id="partial-mismatch-buyer" class="result"></strong><br/><label for="partial-mismatch-buyer" style="font-size: small;"> (= buyer_paid_amount)</label>
                   <br/>
-                  <label for="full-mismatch-seller">Deduct from seller = &nbsp;</label><strong id="full-mismatch-seller" class="result"></strong><br/><label for="full-mismatch-seller" style="font-size: small;"> (= cogs_full_order - seller_txn_fee(order) - comm_fee(order) - seller_voucher_rebate(order) - seller_shipping_rebate -  service_fee(order))</label>
+                  <label for="partial-mismatch-seller">Deduct from seller = &nbsp;</label><strong id="partial-mismatch-seller" class="result"></strong><br/><label for="partial-mismatch-seller" style="font-size: small;"> (= cogs_full_order - seller_txn_fee(order) - comm_fee(order) - seller_voucher_rebate(order) - seller_shipping_rebate -  service_fee(order))</label>
                 </div>
               </div>
             </div>

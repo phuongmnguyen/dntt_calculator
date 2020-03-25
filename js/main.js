@@ -37,30 +37,34 @@ function readEscrowDetailData() {
   }
 
   var str = document.getElementById("escrow_detail_data").value;
-  var lines = str.split(/\n/);
-  var newStr = lines.join(",");
-  while (newStr.endsWith(',')) {
-    if (newStr.startsWith('version')) {
-      newStr = newStr.substring(11, newStr.length - 1);
-    } else {
-      newStr = newStr.substring(0, newStr.length - 1);
+  if (!str) {
+    alert('Please copy all data from esscrow_detail of order and input above.');
+  } else {
+    var lines = str.split(/\n/);
+    var newStr = lines.join(",");
+    while (newStr.endsWith(',')) {
+      if (newStr.startsWith('version')) {
+        newStr = newStr.substring(11, newStr.length - 1);
+      } else {
+        newStr = newStr.substring(0, newStr.length - 1);
+      }
     }
-  }
-  newStr = newStr.replace(/{,/g, ':{').trim();
-  newStr = "{" + newStr.replace(/,}/g, '}').trim() + "}";
-  var correctJson = newStr.replace(/(['"])?([a-z0-9A-Z_]+)(['"])?([\s])?:/g, '"$2": ');
-  var number = 0;
-  correctJson = correctJson.replace(/order_items/g, function() {
+    newStr = newStr.replace(/{,/g, ':{').trim();
+    newStr = "{" + newStr.replace(/,}/g, '}').trim() + "}";
+    var correctJson = newStr.replace(/(['"])?([a-z0-9A-Z_]+)(['"])?([\s])?:/g, '"$2": ');
+    var number = 0;
+    correctJson = correctJson.replace(/order_items/g, function () {
       return "order_item" + ++number;
-  });
-  var obj = JSON.parse(correctJson);
-  var item_keys = Object.keys(obj).filter(value => /^order_item/.test(value));
-  var item_info = [];
-  for (var i = 0; i < item_keys.length; i++) {
-    item_info.push(obj[item_keys[i]]);
+    });
+    var obj = JSON.parse(correctJson);
+    var item_keys = Object.keys(obj).filter(value => /^order_item/.test(value));
+    var item_info = [];
+    for (var i = 0; i < item_keys.length; i++) {
+      item_info.push(obj[item_keys[i]]);
+    }
+    var shipping_info = obj.shipping;
+    prepareData(obj, item_info, shipping_info);
   }
-  var shipping_info = obj.shipping;
-  prepareData(obj, item_info, shipping_info);
 }
 
 function prepareData(obj, item_info, shipping_info) {
@@ -151,6 +155,22 @@ function calculateFullRR() {
                                                                                           -  order_level_data.service_fee) / 100000);
 }
 
+function calculateFullMismatch() {
+  var results = document.getElementsByClassName("result");
+  for (i = 0; i < results.length; i++) {
+    results[i].innerText = "";
+  }
+
+  var order_level_data = JSON.parse(localStorage.getItem('order_level_data'));
+  document.getElementById('full-mismatch-buyer').innerHTML = formatter.format(order_level_data.buyer_paid_amount / 100000);
+  document.getElementById('full-mismatch-seller').innerHTML = formatter.format((order_level_data.cogs_full_order
+                                                                                          - order_level_data.seller_txn_fee
+                                                                                          - order_level_data.comm_fee
+                                                                                          - order_level_data.seller_voucher_rebate
+                                                                                          - order_level_data.seller_shipping_rebate
+                                                                                          -  order_level_data.service_fee) / 100000);
+}
+
 
 function calculatePartialRR() {
   //clear all previously appended results
@@ -169,32 +189,36 @@ function calculatePartialRR() {
     var dispute_item_id = parseFloat(document.getElementById('dispute_item_id').value);
     var dispute_quantity = parseFloat(document.getElementById('dispute_quantity').value);
     var item = item_level_data[item_level_data.findIndex(p => p.item_id == dispute_item_id)];
-    //Buyer = (Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item)- Coins Spent (item)) * Quantity item khiếu nại
-    //Khi quantity khiếu nại = quantity của item -> trả về 0
-    document.getElementById('partial-rr-buyer').innerHTML = formatter.format((((item.total_deal_price/item.quantity)
-                                                                                            - (item.seller_voucher_rebate/item.quantity)
-                                                                                            - (item.shopee_voucher_rebate/item.quantity)
-                                                                                            - (item.coin_used/item.quantity))
-                                                                                          * (dispute_quantity == item.quantity ? 0 : dispute_quantity)) / 100000);
-    if (item_level_data.length == 1) {
-      //TH1: đh đó chỉ có 1 product ID 1 mặt hàng nhưng có nhiều items.
-      //Seller = (Cogs( item) - seller voucher(item) - commission fee (item) - service fee(item) * số lượng thanh toán) - seller defined shipping fee ( nếu có) - (total transaction fee - (transaction fee item * sl khiếu nại))
-      document.getElementById('partial-rr-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
+    if (dispute_quantity > item.quantity) {
+      alert('Dispute quantity cannot be more than item quantity');
+    } else {
+      //Buyer = (Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item)- Coins Spent (item)) * Quantity item khiếu nại
+      //Khi quantity khiếu nại = quantity của item -> trả về 0
+      document.getElementById('partial-rr-buyer').innerHTML = formatter.format((((item.total_deal_price / item.quantity)
+                                                                                                  - (item.seller_voucher_rebate / item.quantity)
+                                                                                                  - (item.shopee_voucher_rebate / item.quantity)
+                                                                                                  - (item.coin_used / item.quantity))
+                                                                                                  * (dispute_quantity == item.quantity ? 0 : dispute_quantity)) / 100000);
+      if (item_level_data.length == 1) {
+        //TH1: đh đó chỉ có 1 product ID 1 mặt hàng nhưng có nhiều items.
+        //Seller = (Cogs( item) - seller voucher(item) - commission fee (item) - service fee(item) * số lượng thanh toán) - seller defined shipping fee ( nếu có) - (total transaction fee - (transaction fee item * sl khiếu nại))
+        document.getElementById('partial-rr-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
                                                                                                     - (item.seller_voucher_rebate / item.quantity)
                                                                                                     - (item.comm_fee / item.quantity)
                                                                                                     - (item.service_fee / item.quantity))
-                                                                                                  * (item.quantity - dispute_quantity))
-                                                                                                  - order_level_data.seller_shipping_rebate
-                                                                                                  - (order_level_data.seller_txn_fee - (item.seller_txn_fee / item.quantity) * dispute_quantity)) / 100000);
-    } else {
-      //TH2: đh đó có nhiều product IDs
-      //Seller = (Cogs( item) - seller voucher(item) - commission fee (item) - service fee(item) - transactiob fee (item)) * số lượng thanh toán
-      document.getElementById('partial-rr-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
-                                                                - (item.seller_voucher_rebate / item.quantity)
-                                                                - (item.comm_fee / item.quantity)
-                                                                - (item.service_fee / item.quantity)
-                                                                - (item.seller_txn_fee / item.quantity))
-                                                                * (item.quantity - dispute_quantity))) / 100000);
+                                                                                                    * (item.quantity - dispute_quantity))
+                                                                                                    - order_level_data.seller_shipping_rebate
+                                                                                                    - (order_level_data.seller_txn_fee - (item.seller_txn_fee / item.quantity) * dispute_quantity)) / 100000);
+        } else {
+        //TH2: đh đó có nhiều product IDs
+        //Seller = (Cogs( item) - seller voucher(item) - commission fee (item) - service fee(item) - transactiob fee (item)) * số lượng thanh toán
+        document.getElementById('partial-rr-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
+                                                                                                    - (item.seller_voucher_rebate / item.quantity)
+                                                                                                    - (item.comm_fee / item.quantity)
+                                                                                                    - (item.service_fee / item.quantity)
+                                                                                                    - (item.seller_txn_fee / item.quantity))
+                                                                                                    * (item.quantity - dispute_quantity))) / 100000);
+      }
     }
     $('.partial-rr-result').show();
   }
@@ -216,6 +240,19 @@ function calculatePartial() {
     item_level_data = addInputData(item_level_data);
     var dispute_item_id = parseFloat(document.getElementById('dispute_item_id_partial').value);
     var dispute_quantity = parseFloat(document.getElementById('dispute_quantity_partial').value);
+    var item = item_level_data[item_level_data.findIndex(p => p.item_id == dispute_item_id)];
+    if (dispute_quantity > item.quantity) {
+      alert('Dispute quantity cannot be more than item quantity');
+    } else {
+      //Buyer = (Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item)- Coins Spent (item)) * Quantity item khiếu nại
+      document.getElementById('partial-buyer').innerHTML = formatter.format((((item.total_deal_price / item.quantity)
+                                                                                              - (item.seller_voucher_rebate / item.quantity)
+                                                                                              - (item.shopee_voucher_rebate / item.quantity)
+                                                                                              - (item.coin_used / item.quantity))
+                                                                                              * dispute_quantity) / 100000);
+      //Seller
+      document.getElementById('partial-buyer').innerHTML = formatter.format((0) / 100000);
+    }
   }
 }
 
@@ -230,8 +267,6 @@ function calculateFullLost() {
   document.getElementById('full-lost-seller').innerHTML = formatter.format((order_level_data.cogs_full_order
                                                                                           - order_level_data.seller_voucher_rebate) / 100000);
 }
-
-
 
 function checkRequiredInputs() {
   var failed = 0;
