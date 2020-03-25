@@ -180,14 +180,22 @@
 
     function goToOrderBE() {
         var order_id = document.getElementById('order_id').value;
-        window.open('https://admin.shopee.vn/s/o/id/' + order_id);
-        window.focus();
+        if (!order_id) {
+            alert('Please input Order ID');
+        } else {
+            window.open('https://admin.shopee.vn/s/o/id/' + order_id);
+            window.focus();
+        }
     }
 
     function goToEscrowDetail() {
         var order_id = document.getElementById('order_id').value;
-        window.open('https://admin.shopee.vn/order/escrow_detail/' + order_id + '/debug/');
-        window.focus();
+        if (!order_id) {
+            alert('Please input Order ID');
+        } else {
+            window.open('https://admin.shopee.vn/order/escrow_detail/' + order_id + '/debug/');
+            window.focus();
+        }
     }
 
     function openTab(evt, tabName, classType) {
