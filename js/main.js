@@ -198,8 +198,8 @@ function calculatePartialRR() {
                                                                                                   - (item.seller_voucher_rebate / item.quantity)
                                                                                                   - (item.shopee_voucher_rebate / item.quantity)
                                                                                                   - (item.coin_used / item.quantity))
-                                                                                                  * (dispute_quantity == item.quantity ? 0 : dispute_quantity)) / 100000);
-      if (item_level_data.length == 1) {
+                                                                                                  * (item.quantity - dispute_quantity)) / 100000);
+      if (item_level_data.length === 1) {
         //TH1: đh đó chỉ có 1 product ID 1 mặt hàng nhưng có nhiều items.
         //Seller = (Cogs( item) - seller voucher(item) - commission fee (item) - service fee(item) * số lượng thanh toán) - seller defined shipping fee ( nếu có) - (total transaction fee - (transaction fee item * sl khiếu nại))
         document.getElementById('partial-rr-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
@@ -211,7 +211,7 @@ function calculatePartialRR() {
                                                                                                     - (order_level_data.seller_txn_fee - (item.seller_txn_fee / item.quantity) * dispute_quantity)) / 100000);
         } else {
         //TH2: đh đó có nhiều product IDs
-        //Seller = (Cogs( item) - seller voucher(item) - commission fee (item) - service fee(item) - transactiob fee (item)) * số lượng thanh toán
+        //Seller = (Cogs( item) - seller voucher(item) - commission fee (item) - service fee(item) - transaction fee (item)) * số lượng thanh toán
         document.getElementById('partial-rr-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
                                                                                                     - (item.seller_voucher_rebate / item.quantity)
                                                                                                     - (item.comm_fee / item.quantity)
@@ -244,14 +244,35 @@ function calculatePartial() {
     if (dispute_quantity > item.quantity) {
       alert('Dispute quantity cannot be more than item quantity');
     } else {
+      //Refund to buyer
       //Buyer = (Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item)- Coins Spent (item)) * Quantity item khiếu nại
       document.getElementById('partial-buyer').innerHTML = formatter.format((((item.total_deal_price / item.quantity)
                                                                                               - (item.seller_voucher_rebate / item.quantity)
                                                                                               - (item.shopee_voucher_rebate / item.quantity)
                                                                                               - (item.coin_used / item.quantity))
                                                                                               * dispute_quantity) / 100000);
-      //Seller
-      document.getElementById('partial-buyer').innerHTML = formatter.format((0) / 100000);
+      //Deduct from seller
+
+      if (item_level_data.length === 1) {
+        //TH1: đh đó chỉ có 1 product ID 1 mặt hàng nhưng có nhiều items.
+        //Seller = COGS (item bị cấn trừ) - Seller Voucher (item bị cấn trừ) - Total Seller Transaction Fee + Seller Transaction Fee (item không bị cấn trừ) - Commission Fee (item bị cấn trừ) - SDSF (item bị cấn trừ) - Total Service Fee
+        document.getElementById('partial-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
+                                                                                                    - (item.seller_voucher_rebate / item.quantity)
+                                                                                                    - (item.comm_fee / item.quantity)
+                                                                                                    - (item.service_fee / item.quantity))
+                                                                                                    * dispute_quantity)
+                                                                                                    - order_level_data.seller_shipping_rebate
+                                                                                                    - (order_level_data.seller_txn_fee - (item.seller_txn_fee / item.quantity) * dispute_quantity)) / 100000);
+        } else {
+        //TH2: đh đó có nhiều product IDs
+        //Seller = (Cogs( item) - seller voucher(item) - commission fee (item) - service fee(item) - transaction fee (item)) * số lượng thanh toán
+        document.getElementById('partial-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
+                                                                                                    - (item.seller_voucher_rebate / item.quantity)
+                                                                                                    - (item.comm_fee / item.quantity)
+                                                                                                    - (item.service_fee / item.quantity)
+                                                                                                    - (item.seller_txn_fee / item.quantity))
+                                                                                                    * (item.quantity - dispute_quantity))) / 100000);
+      }
     }
   }
 }
