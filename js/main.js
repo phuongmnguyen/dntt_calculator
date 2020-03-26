@@ -187,8 +187,9 @@ function calculatePartialRR() {
     var order_level_data = JSON.parse(localStorage.getItem('order_level_data'));
     item_level_data = addInputData(item_level_data);
     var dispute_item_id = parseFloat(document.getElementById('dispute_item_id').value);
+    var dispute_model_id = parseFloat(document.getElementById('dispute_model_id').value);
     var dispute_quantity = parseFloat(document.getElementById('dispute_quantity').value);
-    var item = item_level_data[item_level_data.findIndex(p => p.item_id == dispute_item_id)];
+    var item = item_level_data[item_level_data.findIndex(p => p.item_id == dispute_item_id && p.model_id == dispute_model_id];
     if (dispute_quantity > item.quantity) {
       alert('Dispute quantity cannot be more than item quantity');
     } else {
