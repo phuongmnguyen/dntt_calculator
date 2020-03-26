@@ -252,7 +252,6 @@ function calculatePartial() {
                                                                                               - (item.coin_used / item.quantity))
                                                                                               * dispute_quantity) / 100000);
       //Deduct from seller
-
       if (item_level_data.length === 1) {
         //TH1: đh đó chỉ có 1 product ID 1 mặt hàng nhưng có nhiều items.
         //Seller = COGS (item bị cấn trừ) - Seller Voucher (item bị cấn trừ) - Total Seller Transaction Fee + Seller Transaction Fee (item không bị cấn trừ) - Commission Fee (item bị cấn trừ) - SDSF (item bị cấn trừ) - Total Service Fee
