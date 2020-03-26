@@ -189,7 +189,7 @@ function calculatePartialRR() {
     var dispute_item_id = parseFloat(document.getElementById('dispute_item_id').value);
     var dispute_model_id = parseFloat(document.getElementById('dispute_model_id').value);
     var dispute_quantity = parseFloat(document.getElementById('dispute_quantity').value);
-    var item = item_level_data[item_level_data.findIndex(p => p.item_id == dispute_item_id && p.model_id == dispute_model_id];
+    var item = item_level_data[item_level_data.findIndex(p => p.item_id == dispute_item_id && p.model_id == dispute_model_id)];
     if (dispute_quantity > item.quantity) {
       alert('Dispute quantity cannot be more than item quantity');
     } else {
@@ -255,14 +255,13 @@ function calculatePartial() {
       //Deduct from seller
       if (item_level_data.length === 1) {
         //TH1: đh đó chỉ có 1 product ID 1 mặt hàng nhưng có nhiều items.
-        //Seller = COGS (item bị cấn trừ) - Seller Voucher (item bị cấn trừ) - Total Seller Transaction Fee + Seller Transaction Fee (item không bị cấn trừ) - Commission Fee (item bị cấn trừ) - SDSF (item bị cấn trừ) - Total Service Fee
+        //Seller = COGS (item bị cấn trừ) - Seller Voucher (item bị cấn trừ) - (Total Seller Transaction Fee - Seller Transaction Fee (item không bị cấn trừ)) - Commission Fee (item bị cấn trừ) - Service Fee (item bị cấn trừ)
         document.getElementById('partial-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
                                                                                                     - (item.seller_voucher_rebate / item.quantity)
                                                                                                     - (item.comm_fee / item.quantity)
                                                                                                     - (item.service_fee / item.quantity))
                                                                                                     * dispute_quantity)
-                                                                                                    - order_level_data.seller_shipping_rebate
-                                                                                                    - (order_level_data.seller_txn_fee - (item.seller_txn_fee / item.quantity) * dispute_quantity)) / 100000);
+                                                                                                    - (order_level_data.seller_txn_fee - (item.seller_txn_fee / item.quantity) * (item.quantity - dispute_quantity))) / 100000);
         } else {
         //TH2: đh đó có nhiều product IDs
         //Seller = (Cogs( item) - seller voucher(item) - commission fee (item) - service fee(item) - transaction fee (item)) * số lượng thanh toán
