@@ -289,6 +289,56 @@ function calculateFullLost() {
                                                                                           - order_level_data.seller_voucher_rebate) / 100000);
 }
 
+function calculateDamagePercent() {
+  var results = document.getElementsByClassName("result");
+  for (i = 0; i < results.length; i++) {
+    results[i].innerText = "";
+  }
+  var failed = checkRequiredInputs();
+  if (failed > 0) {
+    alert('Please input all values.');
+  } else {
+    var damage_percent = document.getElementById('damage_percentage').value;
+    var order_level_data = JSON.parse(localStorage.getItem('order_level_data'));
+    document.getElementById('damage-percent-buyer').innerHTML = formatter.format(order_level_data.buyer_paid_amount
+                                                                                                * (damage_percent / 100 ) / 100000);
+    document.getElementById('damage-percent-seller').innerHTML =  formatter.format((order_level_data.cogs_full_order - order_level_data.seller_voucher_rebate)
+                                                                                                  * (damage_percent / 100)/ 100000);
+  }
+
+}
+
+function calculateDamageItem() {
+  var results = document.getElementsByClassName("result");
+  for (i = 0; i < results.length; i++) {
+    results[i].innerText = "";
+  }
+  var failed = checkRequiredInputs();
+  if (failed > 0) {
+    alert('Please input all values.');
+  } else {
+    var item_level_data = JSON.parse(localStorage.getItem('item_level_data'));
+    var order_level_data = JSON.parse(localStorage.getItem('order_level_data'));
+    item_level_data = addInputData(item_level_data);
+    var damage_item_id = parseFloat(document.getElementById('damage_item_id').value);
+    var damage_model_id = parseFloat(document.getElementById('damage_model_id').value);
+    var damage_quantity = parseFloat(document.getElementById('damage_quantity').value);
+    var item = item_level_data[item_level_data.findIndex(p => p.item_id == damage_item_id && p.model_id == damage_model_id)];
+    if (damage_quantity > item.quantity) {
+      alert('Dispute quantity cannot be more than item quantity');
+    } else {
+      document.getElementById('damage-item-buyer').innerHTML = formatter.format( (((item.total_deal_price / item.quantity)
+                                                                                              - (item.seller_voucher_rebate / item.quantity)
+                                                                                              - (item.shopee_voucher_rebate / item.quantity)
+                                                                                              - (item.coin_used / item.quantity))
+                                                                                              * damage_quantity) / 100000);
+      document.getElementById('damage-item-seller').innerHTML = formatter.format(((item.cogs / item.quantity)
+                                                                                              - item.seller_voucher_rebate / item.quantity)
+                                                                                              * damage_quantity / 100000);
+    }
+  }
+}
+
 function checkRequiredInputs() {
   var failed = 0;
   var input_fields = document.getElementsByClassName('required');

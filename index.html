@@ -71,7 +71,7 @@
                 <button class="tablinks" onclick="openTab(event, 'lost', 'case'); calculateFullLost();">Full Lost Case</button>
                 <button class="tablinks" onclick="openTab(event, 'partial', 'case');">Normal Partial Refund Case</button>
                 <button class="tablinks" onclick="openTab(event, 'partial-rr', 'case');">Correction for Partial Quantity</button>
-                <button class="tablinks" onclick="openTab(event, 'partial-mismatch', 'case');">Partial Mismatch Case</button>
+                <button class="tablinks" onclick="openTab(event, 'damage', 'case');">Damage Case</button>
               </div>
               <div id="full-rr" class="tabcontent case">
                 <p>
@@ -115,7 +115,7 @@
                     <li>Amount to deduct from <strong>Seller</strong></li>
                   </ul>
                 </p>
-                <p><label>Dispute Item ID:&nbsp;</label><input class="required" id="dispute_item_id_partial" type="number"/>&nbsp;<label>Model ID:</label><input class="required" id="dispute_model_id_partial" type="number"/><label>Dispute Quantity <span style="font-size: x-small;">(amount buyer wants to return or did not receive)</span>:&nbsp;</label><input class="required" id="dispute_quantity_partial" type="number"/>&nbsp;<button type="button" class="btn btn-success" id="calculate-partial" onclick="calculatePartial();">Calculate</button></p>
+                <p><label>Dispute Item ID:&nbsp;</label><input class="required" id="dispute_item_id_partial" type="number"/>&nbsp;<label>Dispute Model ID:</label><input class="required" id="dispute_model_id_partial" type="number"/><label>Dispute Quantity <span style="font-size: x-small;">(amount buyer wants to return or did not receive)</span>:&nbsp;</label><input class="required" id="dispute_quantity_partial" type="number"/>&nbsp;<button type="button" class="btn btn-success" id="calculate-partial" onclick="calculatePartial();">Calculate</button></p>
                 <div class="calculator-result">
                   <label for="partial-buyer">Refund to buyer = &nbsp;</label><strong id="partial-buyer" class="result"></strong><br/><label for="partial-buyer" style="font-size: small;">  = (Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item) - Coins Spent (item)) * Dispute quantity</label>
                   <br/>
@@ -138,7 +138,7 @@
                     <li>Amount to refund to <strong>Seller</strong></li>
                   </ul>
                 </p>
-                  <p><label>Dispute Item ID:&nbsp;</label><input class="required" id="dispute_item_id" type="number"/><label>Model ID:</label><input class="required" id="dispute_model_id" type="number"/><label>Dispute Quantity <span style="font-size: x-small;">(amount buyer wants to return or did not receive)</span>:&nbsp;</label><input class="required" id="dispute_quantity" type="number"/>&nbsp;<button type="button" class="btn btn-success" id="calculate-partial-rr" onclick="calculatePartialRR();">Calculate</button></p>
+                  <p><label>Dispute Item ID:&nbsp;</label><input class="required" id="dispute_item_id" type="number"/><label>Dispute Model ID:</label><input class="required" id="dispute_model_id" type="number"/><label>Dispute Quantity <span style="font-size: x-small;">(amount buyer wants to return or did not receive)</span>:&nbsp;</label><input class="required" id="dispute_quantity" type="number"/>&nbsp;<button type="button" class="btn btn-success" id="calculate-partial-rr" onclick="calculatePartialRR();">Calculate</button></p>
                 <div class="partial-rr-result" style="display:none;">
                   <label for="partial-rr-buyer">Deduct from buyer = &nbsp;</label><strong id="partial-rr-buyer" class="result"></strong><br/><label for="partial-rr-buyer"> ( = (Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item) - Coins Spent (item)) * (Item quantity - Buyer dispute quantity)</label>
                   <br/>
@@ -159,19 +159,35 @@
                   <label for="full-lost-seller">Refund to seller = &nbsp;</label><strong id="full-lost-seller" class="result"></strong><br/><label for="full-lost-seller" style="font-size: small;"> (= cogs_full_order - seller_voucher_rebate(order))</label>
                 </div>
               </div>
-              <div id="partial-mismatch" class="tabcontent case">
+              <div id="damage" class="tabcontent case">
                  <p>
                   <em style="font-size:small;">In this case calculator will return the following:</em>
                   <ul style="font-size:small;">
                     <li>Amount to refund to <strong>Buyer</strong></li>
                     <li>Amount to deduct from <strong>Seller</strong></li>
                   </ul>
+                  <div class="tab">
+                    <button class="tablinks" onclick="openTab(event, 'damage-percent', 'dmg'); calculateFullRR();">Damage by %</button>
+                    <button class="tablinks" onclick="openTab(event, 'damage-item', 'dmg'); calculateFullMismatch();">Partial Damage by Item</button>
+                  </div>
+                  <div id="damage-percent" class="tabcontent dmg">
+                      <p><label>% Damage (if 50%, input 50):&nbsp;</label><input class="required" id="damage_percentage" type="number"/>&nbsp;<button type="button" class="btn btn-success" onclick="calculateDamagePercent();">Calculate</button></p>
+                      <div class="calculator-result">
+                          <label for="damage-percent-buyer">Refund to buyer = &nbsp;</label><strong id="damage-percent-buyer" class="result"></strong><br/><label for="damage-percent-buyer" style="font-size: small;"> ( = Grand Total * x%)</label>
+                          <br/>
+                          <label for="damage-percent-seller">Deduct from seller = &nbsp;</label><strong id="damage-percent-seller" class="result"></strong><br/><label for="damage-percent-seller" style="font-size: small;"> ( = (Total COGS - Total Seller Voucher) * x% )</label>
+                      </div>
+                  </div>
+                  <div id="damage-item" class="tabcontent dmg">
+                     <p><label>Damage Item ID:&nbsp;</label><input class="required" id="damage_item_id" type="number"/><label>Damage Model ID:</label><input class="required" id="damage_model_id" type="number"/><label>Dispute Quantity <span style="font-size: x-small;">(amount buyer wants to return or did not receive)</span>:&nbsp;</label><input class="required" id="damage_quantity" type="number"/>&nbsp;<button type="button" class="btn btn-success" onclick="calculateDamageItem();">Calculate</button></p>
+                      <div class="calculator-result">
+                          <label for="damage-item-buyer">Refund to buyer = &nbsp;</label><strong id="damage-item-buyer" class="result"></strong><br/><label for="damage-item-buyer" style="font-size: small;"> (<= (Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item)- Coins Spent (item))* Damage quantity) </label>
+                          <br/>
+                          <label for="damage-item-seller">Deduct from seller = &nbsp;</label><strong id="damage-item-seller" class="result"></strong><br/><label for="damage-item-seller" style="font-size: small;"> (<= (COGS (item)- Seller Voucher (item)) * Damage quantity)</label>
+                      </div>
+                  </div>
                 </p>
-                <div class="calculator-result">
-                  <label for="partial-mismatch-buyer">Refund to buyer = &nbsp;</label><strong id="partial-mismatch-buyer" class="result"></strong><br/><label for="partial-mismatch-buyer" style="font-size: small;"> (= buyer_paid_amount)</label>
-                  <br/>
-                  <label for="partial-mismatch-seller">Deduct from seller = &nbsp;</label><strong id="partial-mismatch-seller" class="result"></strong><br/><label for="partial-mismatch-seller" style="font-size: small;"> (= cogs_full_order - seller_txn_fee(order) - comm_fee(order) - seller_voucher_rebate(order) - seller_shipping_rebate -  service_fee(order))</label>
-                </div>
+
               </div>
             </div>
           </div>
@@ -225,7 +241,12 @@
       document.getElementById(tabName).style.display = "block";
       document.getElementById(tabName).scrollIntoView();
       evt.currentTarget.className += " active";
-
+      if (classType == "case" || classType == "dmg") {
+          var req_inputs = document.getElementById(tabName).getElementsByTagName("input");
+          for (x = 0; x < req_inputs.length; x++) {
+              req_inputs[x].className = req_inputs[x].className + "required";
+          }
+      }
     }
   </script>
   <script src="https://www.google-analytics.com/analytics.js" async></script>
