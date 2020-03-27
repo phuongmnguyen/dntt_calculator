@@ -114,11 +114,11 @@
                     <li>Amount to deduct from <strong>Seller</strong></li>
                   </ul>
                 </p>
-                <p><label>Dispute Item ID:&nbsp;</label><input class="required" id="dispute_item_id_partial" type="number"/>&nbsp;<label>Dispute Quantity <span style="font-size: x-small;">(amount buyer wants to return or did not receive)</span>:&nbsp;</label><input class="required" id="dispute_quantity_partial" type="number"/>&nbsp;<button type="button" class="btn btn-success" id="calculate-partial" onclick="calculatePartial();">Calculate</button></p>
+                <p><label>Dispute Item ID:&nbsp;</label><input class="required" id="dispute_item_id_partial" type="number"/>&nbsp;<label>Model ID:</label><input class="required" id="dispute_model_id_partial" type="number"/><label>Dispute Quantity <span style="font-size: x-small;">(amount buyer wants to return or did not receive)</span>:&nbsp;</label><input class="required" id="dispute_quantity_partial" type="number"/>&nbsp;<button type="button" class="btn btn-success" id="calculate-partial" onclick="calculatePartial();">Calculate</button></p>
                 <div class="calculator-result">
-                  <label for="partial-buyer">Refund to buyer = &nbsp;</label><strong id="partial-buyer" class="result"></strong><br/><label for="partial-buyer" style="font-size: small;">  = (Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item)- Coins Spent (item)) * Quantity item khiếu nại</label>
+                  <label for="partial-buyer">Refund to buyer = &nbsp;</label><strong id="partial-buyer" class="result"></strong><br/><label for="partial-buyer" style="font-size: small;">  = (Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item) - Coins Spent (item)) * Dispute quantity</label>
                   <br/>
-                  <label for="partial-seller">Deduct from seller = &nbsp;</label><strong id="partial-seller" class="result"></strong><br/><label for="partial-seller" style="font-size: small;"> = () </label>
+                  <label for="partial-seller">Deduct from seller = &nbsp;</label><strong id="partial-seller" class="result"></strong><br/><label for="partial-seller" style="font-size: small;"> = (COGS (item) - Seller Voucher (item) - Commission Fee (item) - Service Fee (item)) * Dispute quantity - (Total Seller Transaction Fee - Seller Transaction Fee (item) * (Total quantity - Dispute quantity)) </label>
                 </div>
               </div>
               <div id="partial-rr" class="tabcontent case">
@@ -139,9 +139,9 @@
                 </p>
                   <p><label>Dispute Item ID:&nbsp;</label><input class="required" id="dispute_item_id" type="number"/><label>Model ID:</label><input class="required" id="dispute_model_id" type="number"/><label>Dispute Quantity <span style="font-size: x-small;">(amount buyer wants to return or did not receive)</span>:&nbsp;</label><input class="required" id="dispute_quantity" type="number"/>&nbsp;<button type="button" class="btn btn-success" id="calculate-partial-rr" onclick="calculatePartialRR();">Calculate</button></p>
                 <div class="partial-rr-result" style="display:none;">
-                  <label for="partial-rr-buyer">Deduct from buyer = &nbsp;</label><strong id="partial-rr-buyer" class="result"></strong><br/><label for="partial-rr-buyer"> ((Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item)- Coins Spent (item)) * (Item quantity - Buyer dispute quantity)</label>
+                  <label for="partial-rr-buyer">Deduct from buyer = &nbsp;</label><strong id="partial-rr-buyer" class="result"></strong><br/><label for="partial-rr-buyer"> ( = (Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item) - Coins Spent (item)) * (Item quantity - Buyer dispute quantity)</label>
                   <br/>
-                  <label for="partial-rr-seller">Refund to seller = &nbsp;</label><strong id="partial-rr-seller" class="result"></strong><br/><label for="partial-rr-seller"> (= COGS (item) - Seller Voucher (item) - (Total seller transaction fee - Seller transaction fee (item buyer khiếu nại)) - Commission Fee (item) - Service fee (item) - Seller defined shipping fee )</label>
+                  <label for="partial-rr-seller">Refund to seller = &nbsp;</label><strong id="partial-rr-seller" class="result"></strong><br/><label for="partial-rr-seller"> (= (COGS (item) - Seller Voucher (item) - Commission Fee (item) - Service Fee (item)) * Dispute quantity - (Total Seller Transaction Fee - Seller Transaction Fee (item) * (Total quantity - Dispute quantity)) - Seller defined shipping fee)</label>
                 </div>
               </div>
               <div id="lost" class="tabcontent case">
@@ -205,6 +205,12 @@
       // Get all elements with class="tabcontent" and hide them
       tabcontent = document.getElementsByClassName("tabcontent " + classType);
       for (i = 0; i < tabcontent.length; i++) {
+        //Get all input elements within tab and remove required class
+        var inputs = tabcontent[i].getElementsByTagName("input");
+        for (j = 0; j < inputs.length; j++) {
+            inputs[j].className = inputs[j].className.replace("required", "");
+        }
+        //Hide the tab
         tabcontent[i].style.display = "none";
       }
 
@@ -218,6 +224,7 @@
       document.getElementById(tabName).style.display = "block";
       document.getElementById(tabName).scrollIntoView();
       evt.currentTarget.className += " active";
+
     }
   </script>
   <script src="https://www.google-analytics.com/analytics.js" async></script>

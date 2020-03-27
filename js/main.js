@@ -240,8 +240,9 @@ function calculatePartial() {
     var order_level_data = JSON.parse(localStorage.getItem('order_level_data'));
     item_level_data = addInputData(item_level_data);
     var dispute_item_id = parseFloat(document.getElementById('dispute_item_id_partial').value);
+    var dispute_model_id = parseFloat(document.getElementById('dispute_model_id_partial').value);
     var dispute_quantity = parseFloat(document.getElementById('dispute_quantity_partial').value);
-    var item = item_level_data[item_level_data.findIndex(p => p.item_id == dispute_item_id)];
+    var item = item_level_data[item_level_data.findIndex(p => p.item_id == dispute_item_id && p.model_id == dispute_model_id)];
     if (dispute_quantity > item.quantity) {
       alert('Dispute quantity cannot be more than item quantity');
     } else {
@@ -270,7 +271,7 @@ function calculatePartial() {
                                                                                                     - (item.comm_fee / item.quantity)
                                                                                                     - (item.service_fee / item.quantity)
                                                                                                     - (item.seller_txn_fee / item.quantity))
-                                                                                                    * (item.quantity - dispute_quantity))) / 100000);
+                                                                                                    * (dispute_quantity))) / 100000);
       }
     }
   }
