@@ -133,14 +133,14 @@ function writeEscrowDetailDataToPage(order_level_data, item_level_data) {
     for (l = 2; l < Object.values(item_level_data[k]).length; l++) {
       html_item_level += '<td>' + formatter.format(Object.values(item_level_data[k])[l] / 100000) + '</td>';
     }
-    html_item_level += '<td><input type="number" class="quantity required" item_id="' + item_level_data[k].item_id + '"></input></td><td><input type="number" class="service_fee required" item_id="' + item_level_data[k].item_id + '"></input></td>';
+    html_item_level += '<td><input type="number" class="quantity required" item_id="' + item_level_data[k].item_id + '" model_id="' + item_level_data[k].model_id + '"></input></td><td><input type="number" class="service_fee required" item_id="' + item_level_data[k].item_id + '" model_id="' + item_level_data[k].model_id + '"></input></td>';
     html_item_level += '</tr>';
   }
   document.getElementById('item_level_data').innerHTML = html_item_level;
 }
 
-function calculateFullRR() {
-  var results = document.getElementsByClassName("result");
+function calculateFullRR() {""
+  var results = document.getElementsByClassName("result");""
   for (i = 0; i < results.length; i++) {
     results[i].innerText = "";
   }
@@ -358,14 +358,16 @@ function addInputData(item_level_data) {
   var quantity_inputs = $('.quantity');
   for (i=0; i<quantity_inputs.length; i++){
     var item_id = quantity_inputs[i].getAttribute('item_id');
-    var index = item_level_data.findIndex(p => p.item_id == item_id);
+    var model_id = quantity_inputs[i].getAttribute('model_id');
+    var index = item_level_data.findIndex(p => p.item_id == item_id && p.model_id == model_id);
     item_level_data[index].quantity = parseFloat(quantity_inputs[i].value);
   }
 
   var service_fee_inputs = $('.service_fee');
   for(x=0; x<service_fee_inputs.length; x++) {
     var item_id = service_fee_inputs[x].getAttribute('item_id');
-    var index = item_level_data.findIndex(p => p.item_id == item_id);
+    var model_id = service_fee_inputs[x].getAttribute('model_id');
+    var index = item_level_data.findIndex(p => p.item_id == item_id && p.model_id == model_id);
     item_level_data[index].service_fee = parseFloat(service_fee_inputs[x].value);
   }
   return item_level_data;
