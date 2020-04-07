@@ -90,7 +90,7 @@ function prepareData(obj, item_info, shipping_info) {
   order_level_data.cogs_full_order = sum_item_value(item_level_data, 'cogs');
   order_level_data.comm_fee = sum_item_value(item_level_data, 'comm_fee');
   order_level_data.seller_txn_fee = sum_item_value(item_level_data,'seller_txn_fee') + parseFloat(shipping_info.seller_txn_fee_shipping_portion);
-  order_level_data.seller_shipping_rebate = parseFloat(shipping_info.seller_defined_shipping_discount);
+  order_level_data.seller_shipping_rebate = parseFloat(shipping_info.final_seller_paid_shipping_fee);
   order_level_data.seller_voucher_rebate = sum_item_value(item_level_data, 'seller_voucher_rebate');
   order_level_data.service_fee = parseFloat(obj.service_fee);
 
