@@ -139,7 +139,7 @@
                   </ul>
                 </p>
                   <p><label>Dispute Item ID:&nbsp;</label><input class="required" id="dispute_item_id" type="number"/><label>Dispute Model ID:</label><input class="required" id="dispute_model_id" type="number"/><label>Dispute Quantity <span style="font-size: x-small;">(amount buyer wants to return or did not receive)</span>:&nbsp;</label><input class="required" id="dispute_quantity" type="number"/>&nbsp;<button type="button" class="btn btn-success" id="calculate-partial-rr" onclick="calculatePartialRR();">Calculate</button></p>
-                <div class="partial-rr-result" style="display:none;">
+                <div class="calculator-result">
                   <label for="partial-rr-buyer">Deduct from buyer = &nbsp;</label><strong id="partial-rr-buyer" class="result"></strong><br/><label for="partial-rr-buyer"> ( = (Deal Price (item) - Seller Voucher (item) - Shopee Voucher (item) - Coins Spent (item)) * (Item quantity - Buyer dispute quantity)</label>
                   <br/>
                   <label for="partial-rr-seller">Refund to seller = &nbsp;</label><strong id="partial-rr-seller" class="result"></strong><br/><label for="partial-rr-seller"> (= (COGS (item) - Seller Voucher (item) - Commission Fee (item) - Service Fee (item)) * Dispute quantity - (Total Seller Transaction Fee - Seller Transaction Fee (item) * (Total quantity - Dispute quantity)) - Seller defined shipping fee)</label>
