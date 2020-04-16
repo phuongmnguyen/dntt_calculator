@@ -294,11 +294,10 @@ function calculateDamagePercent() {
   for (i = 0; i < results.length; i++) {
     results[i].innerText = "";
   }
-  var failed = checkRequiredInputs();
-  if (failed > 0) {
+  var damage_percent = document.getElementById('damage_percentage').value;
+  if (!damage_percent) {
     alert('Please input all values.');
   } else {
-    var damage_percent = document.getElementById('damage_percentage').value;
     var order_level_data = JSON.parse(localStorage.getItem('order_level_data'));
     document.getElementById('damage-percent-buyer').innerHTML = formatter.format(order_level_data.buyer_paid_amount
                                                                                                 * (damage_percent / 100 ) / 100000);
