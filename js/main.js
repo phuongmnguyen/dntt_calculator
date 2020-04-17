@@ -254,25 +254,13 @@ function calculatePartial() {
                                                                                               - (item.coin_used / item.quantity))
                                                                                               * dispute_quantity) / 100000);
       //Deduct from seller
-      if (item_level_data.length === 1) {
-        //TH1: đh đó chỉ có 1 product ID 1 mặt hàng nhưng có nhiều items.
-        //Seller = COGS (item bị cấn trừ) - Seller Voucher (item bị cấn trừ) - (Total Seller Transaction Fee - Seller Transaction Fee (item không bị cấn trừ)) - Commission Fee (item bị cấn trừ) - Service Fee (item bị cấn trừ)
-        document.getElementById('partial-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
-                                                                                                    - (item.seller_voucher_rebate / item.quantity)
-                                                                                                    - (item.comm_fee / item.quantity)
-                                                                                                    - (item.service_fee / item.quantity))
-                                                                                                    * dispute_quantity)
-                                                                                                    - (order_level_data.seller_txn_fee - (item.seller_txn_fee / item.quantity) * (item.quantity - dispute_quantity))) / 100000);
-        } else {
-        //TH2: đh đó có nhiều product IDs
-        //Seller = (Cogs( item) - seller voucher(item) - commission fee (item) - service fee(item) - transaction fee (item)) * số lượng thanh toán
-        document.getElementById('partial-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
+      //Seller = (Cogs( item) - seller voucher(item) - commission fee (item) - service fee(item) - transaction fee (item)) * số lượng thanh toán
+      document.getElementById('partial-seller').innerHTML = formatter.format(((((item.cogs / item.quantity)
                                                                                                     - (item.seller_voucher_rebate / item.quantity)
                                                                                                     - (item.comm_fee / item.quantity)
                                                                                                     - (item.service_fee / item.quantity)
                                                                                                     - (item.seller_txn_fee / item.quantity))
                                                                                                     * (dispute_quantity))) / 100000);
-      }
     }
   }
 }
